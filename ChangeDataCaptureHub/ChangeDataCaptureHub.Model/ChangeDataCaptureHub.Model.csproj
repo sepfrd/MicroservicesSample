@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -10,9 +10,9 @@
     <None Remove="Models\"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Grpc.AspNetCore" Version="2.67.0"/>
-    <PackageReference Include="Mapster" Version="7.4.0"/>
-    <PackageReference Include="MongoDB.Driver" Version="3.1.0"/>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.80.0" />
+    <PackageReference Include="Mapster" Version="10.0.7" />
+    <PackageReference Include="MongoDB.Driver" Version="3.9.0" />
   </ItemGroup>
   <ItemGroup>
     <Protobuf Include="Protos/todolistmanager.proto" GrpcServices="Client"/>

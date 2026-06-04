@@ -18,7 +18,7 @@ public class GrpcService : ToDoListManagerGrpc.ToDoListManagerGrpcBase
         _toDoItemRepository = (ToDoItemRepository)unitOfWork.ToDoItemRepository;
     }
 
-    public async override Task<GrpcResponse?> GetAllToDoItems(GetAllRequest request, ServerCallContext context)
+    public override async Task<GrpcResponse?> GetAllToDoItems(GetAllRequest request, ServerCallContext context)
     {
         var response = new GrpcResponse();
 

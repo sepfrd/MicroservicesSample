@@ -91,11 +91,13 @@ public class ToDoItemBusiness : IToDoItemBusiness
         return CustomResponse<List<ToDoItemDto>?>.CreateSuccessfulResponse(toDoItemDtos);
     }
 
-    public async Task<CustomResponse<ToDoItemDto?>> CreateToDoItemAsync(ToDoItemDto toDoItemDto, CancellationToken cancellationToken = default)
+    public async Task<CustomResponse<ToDoItemDto?>> CreateToDoItemAsync(
+        CreateOrUpdateToDoItemDto toDoItemDtoDto,
+        CancellationToken cancellationToken = default)
     {
         var toDoList = await _unitOfWork
             .ToDoListRepository
-            .GetByGuidAsync(toDoItemDto.ToDoListGuid, null, cancellationToken);
+            .GetByGuidAsync(toDoItemDtoDto.ToDoListGuid, null, cancellationToken);
 
         if (toDoList is null)
         {
@@ -113,15 +115,15 @@ public class ToDoItemBusiness : IToDoItemBusiness
             return CustomResponse<ToDoItemDto?>.CreateUnsuccessfulResponse(HttpStatusCode.Forbidden);
         }
 
-        var toDoItem = toDoItemDto.Adapt<ToDoItem>();
+        var toDoItem = toDoItemDtoDto.Adapt<ToDoItem>();
 
         toDoItem.ToDoListId = toDoList.Id;
 
-        if (toDoItemDto.CategoryGuid.HasValue)
+        if (toDoItemDtoDto.CategoryGuid.HasValue)
         {
             var category = await _unitOfWork
                 .CategoryRepository
-                .GetByGuidAsync(toDoItemDto.CategoryGuid.Value, null, cancellationToken);
+                .GetByGuidAsync(toDoItemDtoDto.CategoryGuid.Value, null, cancellationToken);
 
             if (category is null)
             {
@@ -147,7 +149,7 @@ public class ToDoItemBusiness : IToDoItemBusiness
         var createdToDoItemDto = createdToDoItem.Adapt<ToDoItemDto>();
 
         createdToDoItemDto.ToDoListGuid = toDoList.Guid;
-        createdToDoItemDto.CategoryGuid = toDoItemDto.CategoryGuid;
+        createdToDoItemDto.CategoryGuid = toDoItemDtoDto.CategoryGuid;
 
         var toDoItemPublishedDto = new ToDoItemPublishedDto
         {
@@ -163,17 +165,20 @@ public class ToDoItemBusiness : IToDoItemBusiness
             HttpStatusCode.Created);
     }
 
-    public async Task<CustomResponse<ToDoItemDto?>> UpdateToDoItemAsync(ToDoItemDto toDoItemDto, CancellationToken cancellationToken = default)
+    public async Task<CustomResponse<ToDoItemDto?>> UpdateToDoItemAsync(
+        Guid toDoItemGuid,
+        CreateOrUpdateToDoItemDto createOrUpdateToDoItemDto,
+        CancellationToken cancellationToken = default)
     {
         var toDoItem = await _toDoItemRepository.GetByGuidAsync(
-            toDoItemDto.Guid,
+            toDoItemGuid,
             toDoItems =>
                 toDoItems
                     .Include(item => item.ToDoList)
                     .Include(item => item.Category),
             cancellationToken);
 
-        if (toDoItem is null || toDoItem.ToDoList?.Guid != toDoItemDto.ToDoListGuid)
+        if (toDoItem is null || toDoItem.ToDoList?.Guid != createOrUpdateToDoItemDto.ToDoListGuid)
         {
             return CustomResponse<ToDoItemDto?>.CreateUnsuccessfulResponse(
                 HttpStatusCode.BadRequest,
@@ -189,13 +194,13 @@ public class ToDoItemBusiness : IToDoItemBusiness
             return CustomResponse<ToDoItemDto?>.CreateUnsuccessfulResponse(HttpStatusCode.Forbidden);
         }
 
-        toDoItemDto.Adapt(toDoItem);
+        createOrUpdateToDoItemDto.Adapt(toDoItem);
 
-        if (toDoItemDto.CategoryGuid.HasValue && toDoItemDto.CategoryGuid.Value != toDoItem.Category!.Guid)
+        if (createOrUpdateToDoItemDto.CategoryGuid.HasValue && createOrUpdateToDoItemDto.CategoryGuid.Value != toDoItem.Category!.Guid)
         {
             var newCategory = await _unitOfWork
                 .CategoryRepository
-                .GetByGuidAsync(toDoItemDto.CategoryGuid.Value, null, cancellationToken);
+                .GetByGuidAsync(createOrUpdateToDoItemDto.CategoryGuid.Value, null, cancellationToken);
 
             if (newCategory is null)
             {

@@ -71,5 +71,4 @@ public class ToDoListManagerDbContext : DbContext
             .HasPrincipalKey(user => user.Id)
             .OnDelete(DeleteBehavior.Cascade);
     }
-
 }

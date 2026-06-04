@@ -18,8 +18,8 @@ public class BaseRepository<T> : IBaseRepository<T>
         _mongoDbCollection = mongoDatabase.GetCollection<T>(databaseSettings.Value.CollectionName);
     }
 
-    public async Task CreateOneAsync(T t, CancellationToken cancellationToken = default) =>
-        await _mongoDbCollection.InsertOneAsync(t, cancellationToken: cancellationToken);
+    public async Task CreateOneAsync(T entity, CancellationToken cancellationToken = default) =>
+        await _mongoDbCollection.InsertOneAsync(entity, cancellationToken: cancellationToken);
 
     public async Task CreateManyAsync(IEnumerable<T> values, CancellationToken cancellationToken = default) =>
         await _mongoDbCollection.InsertManyAsync(values, cancellationToken: cancellationToken);
@@ -43,11 +43,11 @@ public class BaseRepository<T> : IBaseRepository<T>
         return await documentCursor.FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<bool> UpdateOneAsync(T t, CancellationToken cancellationToken = default)
+    public async Task<bool> UpdateOneAsync(T entity, CancellationToken cancellationToken = default)
     {
-        var filterDefinition = Builders<T>.Filter.Eq(x => x.Id, t.Id);
+        var filterDefinition = Builders<T>.Filter.Eq(x => x.Id, entity.Id);
 
-        var resultCursor = await _mongoDbCollection.ReplaceOneAsync(filterDefinition, t, cancellationToken: cancellationToken);
+        var resultCursor = await _mongoDbCollection.ReplaceOneAsync(filterDefinition, entity, cancellationToken: cancellationToken);
 
         return resultCursor.ModifiedCount == 1;
     }

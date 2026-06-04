@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
     internal static IServiceCollection InjectMessageBusSubscriber(this IServiceCollection services) =>
         services.AddHostedService<MessageBusSubscriber>();
 
-    internal async static Task<IServiceCollection> InjectRabbitMqAsync(this IServiceCollection services, IConfiguration configuration)
+    internal static async Task<IServiceCollection> InjectRabbitMqAsync(this IServiceCollection services, IConfiguration configuration)
     {
         var rabbitMqConfigurationDto = configuration.GetSection("RabbitMqConfiguration").Get<RabbitMqConfigurationDto>()!;
 

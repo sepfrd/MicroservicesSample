@@ -18,6 +18,7 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpGet]
+    [Route("me")]
     public async Task<ActionResult<CustomResponse<UserDto?>>> GetCurrentUserAsync(CancellationToken cancellationToken)
     {
         var result = await _userBusiness.GetCurrentUserAsync(cancellationToken);

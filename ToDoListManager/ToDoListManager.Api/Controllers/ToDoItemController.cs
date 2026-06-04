@@ -45,17 +45,26 @@ public class ToDoItemController : ControllerBase
         await _toDoItemBusiness.GetAllToDoItemsWithoutPaginationAsync(cancellationToken);
 
     [HttpPost]
-    public async Task<ActionResult<CustomResponse<ToDoItemDto?>>> CreateToDoItemAsync(ToDoItemDto toDoItemDto, CancellationToken cancellationToken)
+    public async Task<ActionResult<CustomResponse<ToDoItemDto?>>> CreateToDoItemAsync(
+        CreateOrUpdateToDoItemDto createOrUpdateToDoItemDto,
+        CancellationToken cancellationToken)
     {
-        var result = await _toDoItemBusiness.CreateToDoItemAsync(toDoItemDto, cancellationToken);
+        var result = await _toDoItemBusiness.CreateToDoItemAsync(createOrUpdateToDoItemDto, cancellationToken);
 
         return StatusCode((int)result.HttpStatusCode, result);
     }
 
     [HttpPut]
-    public async Task<ActionResult<CustomResponse<ToDoItemDto?>>> UpdateToDoItemAsync(ToDoItemDto toDoItemDto, CancellationToken cancellationToken)
+    [Route("{toDoItemGuid:guid}")]
+    public async Task<ActionResult<CustomResponse<ToDoItemDto?>>> UpdateToDoItemAsync(
+        Guid toDoItemGuid,
+        CreateOrUpdateToDoItemDto createOrUpdateToDoItemDto,
+        CancellationToken cancellationToken)
     {
-        var result = await _toDoItemBusiness.UpdateToDoItemAsync(toDoItemDto, cancellationToken);
+        var result = await _toDoItemBusiness.UpdateToDoItemAsync(
+            toDoItemGuid,
+            createOrUpdateToDoItemDto,
+            cancellationToken);
 
         return StatusCode((int)result.HttpStatusCode, result);
     }

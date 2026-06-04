@@ -21,7 +21,7 @@ public sealed class MessageBusSubscriber : BackgroundService
         _rabbitMqConfigurationDto = configuration.GetSection("RabbitMqConfiguration").Get<RabbitMqConfigurationDto>()!;
     }
 
-    protected async override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var channel = await _rabbitMqConnection.CreateChannelAsync(cancellationToken: stoppingToken);
 

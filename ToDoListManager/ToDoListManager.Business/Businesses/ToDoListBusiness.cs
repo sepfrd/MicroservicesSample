@@ -70,16 +70,16 @@ public class ToDoListBusiness : IToDoListBusiness
         return CustomResponse<List<ToDoListDto>?>.CreateSuccessfulResponse(toDoListDtos);
     }
 
-    public async Task<CustomResponse<ToDoListDto?>> CreateToDoListAsync(ToDoListDto toDoListDto, CancellationToken cancellationToken = default)
+    public async Task<CustomResponse<ToDoListDto?>> CreateToDoListAsync(CreateOrUpdateToDoListDto orUpdateToDoListDto, CancellationToken cancellationToken = default)
     {
         var loggedInUser = await _authBusiness.GetLoggedInUserAsync(cancellationToken);
 
-        if (loggedInUser!.Guid != toDoListDto.UserGuid)
+        if (loggedInUser is null)
         {
             return CustomResponse<ToDoListDto?>.CreateUnsuccessfulResponse(HttpStatusCode.Forbidden);
         }
 
-        var toDoList = toDoListDto.Adapt<ToDoList>();
+        var toDoList = orUpdateToDoListDto.Adapt<ToDoList>();
 
         toDoList.UserId = loggedInUser.Id;
 
@@ -89,15 +89,23 @@ public class ToDoListBusiness : IToDoListBusiness
 
         var createdToDoListDto = createdToDoList.Adapt<ToDoListDto>();
 
+        createdToDoListDto.UserGuid = loggedInUser.Guid;
+
         return CustomResponse<ToDoListDto?>.CreateSuccessfulResponse(
             createdToDoListDto,
             string.Format(MessageConstants.SuccessfullyCreated, nameof(ToDoList).Humanize(LetterCasing.Title)),
             HttpStatusCode.Created);
     }
 
-    public async Task<CustomResponse<ToDoListDto?>> UpdateToDoListAsync(ToDoListDto toDoListDto, CancellationToken cancellationToken = default)
+    public async Task<CustomResponse<ToDoListDto?>> UpdateToDoListAsync(
+        Guid toDoListGuid,
+        CreateOrUpdateToDoListDto createOrUpdateToDoListDto,
+        CancellationToken cancellationToken = default)
     {
-        var toDoList = await _toDoListRepository.GetByGuidAsync(toDoListDto.Guid, null, cancellationToken);
+        var toDoList = await _toDoListRepository.GetByGuidAsync(
+            toDoListGuid,
+            null,
+            cancellationToken);
 
         if (toDoList is null)
         {
@@ -110,21 +118,23 @@ public class ToDoListBusiness : IToDoListBusiness
 
         var loggedInUser = await _authBusiness.GetLoggedInUserAsync(cancellationToken);
 
-        if (loggedInUser!.Guid != toDoListDto.UserGuid || loggedInUser.Id != toDoList.UserId)
+        if (loggedInUser?.Id != toDoList.UserId)
         {
             return CustomResponse<ToDoListDto?>.CreateUnsuccessfulResponse(HttpStatusCode.Forbidden);
         }
 
-        toDoListDto.Adapt(toDoList);
+        createOrUpdateToDoListDto.Adapt(toDoList);
 
         var updatedToDoList = _toDoListRepository.Update(toDoList);
 
         await _unitOfWork.CommitAsync(cancellationToken);
 
-        var updateToDoListDto = updatedToDoList.Adapt<ToDoListDto>();
+        var updatedToDoListDto = updatedToDoList.Adapt<ToDoListDto>();
+
+        updatedToDoListDto.UserGuid = loggedInUser.Guid;
 
         return CustomResponse<ToDoListDto?>.CreateSuccessfulResponse(
-            updateToDoListDto,
+            updatedToDoListDto,
             string.Format(
                 MessageConstants.SuccessfullyUpdated,
                 nameof(ToDoList).Humanize(LetterCasing.Title)));

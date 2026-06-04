@@ -35,17 +35,26 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<CustomResponse<CategoryDto?>>> CreateCategoryAsync(CategoryDto categoryDto, CancellationToken cancellationToken)
+    public async Task<ActionResult<CustomResponse<CategoryDto?>>> CreateCategoryAsync(
+        CreateOrUpdateCategoryDto createOrUpdateCategoryDto,
+        CancellationToken cancellationToken)
     {
-        var result = await _categoryBusiness.CreateCategoryAsync(categoryDto, cancellationToken);
+        var result = await _categoryBusiness.CreateCategoryAsync(createOrUpdateCategoryDto, cancellationToken);
 
         return StatusCode((int)result.HttpStatusCode, result);
     }
 
     [HttpPut]
-    public async Task<ActionResult<CustomResponse<CategoryDto?>>> UpdateCategoryAsync(CategoryDto categoryDto, CancellationToken cancellationToken)
+    [Route("{categoryGuid:guid}")]
+    public async Task<ActionResult<CustomResponse<CategoryDto?>>> UpdateCategoryAsync(
+        Guid categoryGuid,
+        CreateOrUpdateCategoryDto createOrUpdateCategoryDto,
+        CancellationToken cancellationToken)
     {
-        var result = await _categoryBusiness.UpdateCategoryAsync(categoryDto, cancellationToken);
+        var result = await _categoryBusiness.UpdateCategoryAsync(
+            categoryGuid,
+            createOrUpdateCategoryDto,
+            cancellationToken);
 
         return StatusCode((int)result.HttpStatusCode, result);
     }

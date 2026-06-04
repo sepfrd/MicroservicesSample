@@ -37,17 +37,30 @@ public class ToDoListController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<CustomResponse<ToDoListDto?>>> CreateToDoListAsync(ToDoListDto toDoListDto, CancellationToken cancellationToken)
+    public async Task<ActionResult<CustomResponse<ToDoListDto?>>> CreateToDoListAsync(
+        CreateOrUpdateToDoListDto createOrUpdateToDoListDto,
+        CancellationToken cancellationToken)
     {
-        var result = await _toDoListBusiness.CreateToDoListAsync(toDoListDto, cancellationToken);
+        var result = await _toDoListBusiness
+            .CreateToDoListAsync(
+                createOrUpdateToDoListDto,
+                cancellationToken);
 
         return StatusCode((int)result.HttpStatusCode, result);
     }
 
     [HttpPut]
-    public async Task<ActionResult<CustomResponse<ToDoListDto?>>> UpdateToDoListAsync(ToDoListDto toDoListDto, CancellationToken cancellationToken)
+    [Route("{toDoListGuid:guid}")]
+    public async Task<ActionResult<CustomResponse<ToDoListDto?>>> UpdateToDoListAsync(
+        Guid toDoListGuid,
+        CreateOrUpdateToDoListDto createOrUpdateToDoListDto,
+        CancellationToken cancellationToken)
     {
-        var result = await _toDoListBusiness.UpdateToDoListAsync(toDoListDto, cancellationToken);
+        var result = await _toDoListBusiness
+            .UpdateToDoListAsync(
+                toDoListGuid,
+                createOrUpdateToDoListDto,
+                cancellationToken);
 
         return StatusCode((int)result.HttpStatusCode, result);
     }

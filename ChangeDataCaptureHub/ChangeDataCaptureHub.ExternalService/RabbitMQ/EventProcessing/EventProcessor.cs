@@ -37,8 +37,8 @@ public class EventProcessor : IEventProcessor
 
         try
         {
-            var toDoItemDocument = toDoItemPublishedDto.Adapt<ToDoItemDocument>();
-            await repository.CreateOneAsync(toDoItemDocument, cancellationToken);
+            var toDoItemDocument = toDoItemPublishedDto?.ToDoItemDto.Adapt<ToDoItemDocument>();
+            await repository.CreateOneAsync(toDoItemDocument!, cancellationToken);
         }
         catch (Exception exception)
         {

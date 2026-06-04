@@ -5,7 +5,7 @@ namespace ToDoListManager.Common.Helpers;
 
 public static class PasswordHelper
 {
-    public async static Task<string> GetHashStringAsync(this string inputString)
+    public static async Task<string> GetHashStringAsync(this string inputString)
     {
         using HashAlgorithm algorithm = SHA512.Create();
 

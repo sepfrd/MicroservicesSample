@@ -114,7 +114,7 @@ internal static class ServiceCollectionExtensions
             .AddFluentValidationAutoValidation()
             .AddValidatorsFromAssemblyContaining<PersonValidator>();
 
-    internal async static Task<IServiceCollection> InjectRabbitMqAsync(this IServiceCollection services, IConfiguration configuration)
+    internal static async Task<IServiceCollection> InjectRabbitMqAsync(this IServiceCollection services, IConfiguration configuration)
     {
         var rabbitMqConfigurationDto = configuration.GetSection("RabbitMqConfiguration").Get<RabbitMqConfigurationDto>()!;
 

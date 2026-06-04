@@ -53,5 +53,4 @@ public class CustomResponse
             Message = message,
             HttpStatusCode = httpStatusCode
         };
-
 }

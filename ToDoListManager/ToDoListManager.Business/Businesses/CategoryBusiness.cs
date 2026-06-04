@@ -70,16 +70,18 @@ public class CategoryBusiness : ICategoryBusiness
         return CustomResponse<List<CategoryDto>?>.CreateSuccessfulResponse(categoryDtos);
     }
 
-    public async Task<CustomResponse<CategoryDto?>> CreateCategoryAsync(CategoryDto categoryDto, CancellationToken cancellationToken = default)
+    public async Task<CustomResponse<CategoryDto?>> CreateCategoryAsync(
+        CreateOrUpdateCategoryDto createOrUpdateCategoryDto,
+        CancellationToken cancellationToken = default)
     {
         var loggedInUser = await _authBusiness.GetLoggedInUserAsync(cancellationToken);
 
-        if (loggedInUser!.Guid != categoryDto.UserGuid)
+        if (loggedInUser is null)
         {
             return CustomResponse<CategoryDto?>.CreateUnsuccessfulResponse(HttpStatusCode.Forbidden);
         }
 
-        var category = categoryDto.Adapt<Category>();
+        var category = createOrUpdateCategoryDto.Adapt<Category>();
 
         category.UserId = loggedInUser.Id;
 
@@ -89,15 +91,20 @@ public class CategoryBusiness : ICategoryBusiness
 
         var createdCategoryDto = createdCategory.Adapt<CategoryDto>();
 
+        createdCategoryDto.UserGuid = loggedInUser.Guid;
+
         return CustomResponse<CategoryDto?>.CreateSuccessfulResponse(
             createdCategoryDto,
             string.Format(MessageConstants.SuccessfullyCreated, nameof(Category).Humanize(LetterCasing.Title)),
             HttpStatusCode.Created);
     }
 
-    public async Task<CustomResponse<CategoryDto?>> UpdateCategoryAsync(CategoryDto categoryDto, CancellationToken cancellationToken = default)
+    public async Task<CustomResponse<CategoryDto?>> UpdateCategoryAsync(
+        Guid categoryGuid,
+        CreateOrUpdateCategoryDto createOrUpdateCategoryDto,
+        CancellationToken cancellationToken = default)
     {
-        var category = await _categoryRepository.GetByGuidAsync(categoryDto.Guid, null, cancellationToken);
+        var category = await _categoryRepository.GetByGuidAsync(categoryGuid, null, cancellationToken);
 
         if (category is null)
         {
@@ -110,12 +117,12 @@ public class CategoryBusiness : ICategoryBusiness
 
         var loggedInUser = await _authBusiness.GetLoggedInUserAsync(cancellationToken);
 
-        if (loggedInUser!.Guid != categoryDto.UserGuid)
+        if (loggedInUser is null)
         {
             return CustomResponse<CategoryDto?>.CreateUnsuccessfulResponse(HttpStatusCode.Forbidden);
         }
 
-        categoryDto.Adapt(category);
+        createOrUpdateCategoryDto.Adapt(category);
 
         var updatedCategory = _categoryRepository.Update(category);
 

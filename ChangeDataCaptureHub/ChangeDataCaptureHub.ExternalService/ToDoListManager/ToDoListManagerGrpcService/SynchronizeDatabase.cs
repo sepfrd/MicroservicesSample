@@ -7,7 +7,7 @@ namespace ChangeDataCaptureHub.ExternalService.ToDoListManager.ToDoListManagerGr
 
 public static class SynchronizeDatabase
 {
-    public async static Task FetchNewEntitiesAsync(IServiceScopeFactory serviceScopeFactory)
+    public static async Task FetchNewEntitiesAsync(IServiceScopeFactory serviceScopeFactory)
     {
         using var serviceScope = serviceScopeFactory.CreateScope();
 
@@ -42,7 +42,7 @@ public static class SynchronizeDatabase
         await InsertNewDataAsync(toDoItemRepository, toDoItems);
     }
 
-    private async static Task InsertNewDataAsync(IBaseRepository<ToDoItemDocument> toDoItemRepository, IEnumerable<ToDoItemDocument> toDoItems)
+    private static async Task InsertNewDataAsync(IBaseRepository<ToDoItemDocument> toDoItemRepository, IEnumerable<ToDoItemDocument> toDoItems)
     {
         await toDoItemRepository.CreateManyAsync(toDoItems);
     }
