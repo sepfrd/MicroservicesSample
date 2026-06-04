@@ -6,8 +6,6 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 
 WORKDIR /source
 
-COPY NuGet.Config .
-
 COPY . .
 
 RUN dotnet restore ./ChangeDataCaptureHub.Web/ChangeDataCaptureHub.Web.csproj --disable-parallel

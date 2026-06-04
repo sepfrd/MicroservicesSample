@@ -6,8 +6,6 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 
 WORKDIR /source
 
-COPY NuGet.Config .
-
 COPY . .
 
 RUN dotnet restore "./ToDoListManager.Web/ToDoListManager.Web.csproj" --disable-parallel
